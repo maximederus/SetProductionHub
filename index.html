@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Production Hub - Centralina del Set</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: {
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                        },
+                        slate: {
+                            850: '#131c2e',
+                            950: '#090d16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 0 25px -5px rgba(234, 179, 8, 0.18);
+        }
+    </style>
+    <!-- PWA Meta Tags & Theme -->
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MiaApp">
+
+  <!-- Manifest Inline via Data URI -->
+  <link rel="manifest" id="manifest-placeholder">
+
+  <!-- FontAwesome Icons (per l'icona del banner) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full font-sans antialiased flex flex-col bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-slate-950">
+    <!-- BANNER INSTALLAZIONE PWA -->
+  <div id="pwaInstallBanner" class="hidden bg-amber-500 text-slate-950 px-3 py-2 text-xs font-bold flex justify-between items-center sticky top-0 z-50 shadow-md">
+    <span class="flex items-center gap-1.5">
+      <i class="fa-solid fa-mobile-screen-button"></i> Installa l'App sul telefono!
+    </span>
+    <button onclick="installPWA()" class="bg-slate-950 text-amber-400 px-2.5 py-1 rounded text-[10px] uppercase font-bold hover:bg-slate-900 transition">
+      Installa Ora
+    </button>
+  </div>
+    <!-- TOP HEADER / NAVBAR -->
+    <header class="glass-panel sticky top-0 z-30 border-b border-slate-800/80 px-4 py-3 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Title & Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid font-black text-xl fa-clapperboard"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-lg font-extrabold tracking-wider uppercase text-slate-100" id="prodTitleDisplay">SET PRODUCTION HUB</h1>
+                        <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium" id="prodSubtitleDisplay">Centralina App & Documenti di Set</p>
+                </div>
+            </div>
+
+            <!-- Clock & Shooting Status Banner -->
+            <div class="flex items-center space-x-3 sm:space-x-6">
+                <!-- Status Badge -->
+                <div class="hidden sm:flex items-center px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
+                    <i class="fa-solid fa-film text-amber-400 mr-2"></i>
+                    <span id="shootingModeDisplay" class="font-medium text-slate-200">Giorno 14 / Riprese In Corso</span>
+                </div>
+
+                <!-- Clock -->
+                <div class="text-right bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-xl min-w-[130px]">
+                    <div id="clockTime" class="text-base font-bold tracking-widest text-amber-400 font-mono">00:00:00</div>
+                    <div id="clockDate" class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">--/--/----</div>
+                </div>
+
+                <!-- Settings Button -->
+                <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-amber-400 transition-all duration-200 active:scale-95" title="Impostazioni & Nuovi File">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
+        
+        <!-- Welcome Banner & Quick Action Bar -->
+        <div class="mb-6 p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+            <div class="space-y-1">
+                <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-amber-400 text-sm"></i>
+                    Pannello di Controllo Produzione
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-400 max-w-2xl">
+                    Accedi alle tue app di set o consulta in tempo reale sceneggiatura, PdL e documenti da Google Drive.
+                </p>
+            </div>
+            
+            <!-- Quick Filter Tabs -->
+            <div class="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800/80 w-full md:w-auto">
+                <button onclick="setFilter('all')" id="filter-all" class="filter-btn flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-amber-500 text-slate-950 shadow">
+                    Tutti (<span id="count-all">0</span>)
+                </button>
+                <button onclick="setFilter('app')" id="filter-app" class="filter-btn flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-100 transition-all">
+                    App (<span id="count-app">0</span>)
+                </button>
+                <button onclick="setFilter('pdf')" id="filter-pdf" class="filter-btn flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-100 transition-all">
+                    PDF / Drive (<span id="count-pdf">0</span>)
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 1: APPS OPERATIVE -->
+        <section id="section-app" class="mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-cubes"></i> Applicazioni & Strumenti Operativi
+                </h3>
+                <span class="text-xs text-slate-500">AppSheet & Custom HTML/JS</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="appsGrid">
+                <!-- App cards rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: DOCUMENTI DI SET (PDF / GOOGLE DRIVE) -->
+        <section id="section-pdf" class="mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf"></i> Documenti di Set & Consultazione (Google Drive / PDF)
+                </h3>
+                <span class="text-xs text-slate-500">Sceneggiatura, PdL, Figurazioni</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="pdfGrid">
+                <!-- PDF cards rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="mt-auto pt-6 border-t border-slate-800/60 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                <span>Set Production Hub &copy; <span id="currentYear"></span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="flex items-center gap-1.5 text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Google Drive & AppSheet Ready
+                </span>
+            </div>
+        </footer>
+    </main>
+
+    <!-- FULLSCREEN IFRAME APP/PDF VIEWER CONTAINER -->
+    <div id="appViewerModal" class="fixed inset-0 z-50 bg-slate-950 flex flex-col hidden transition-opacity duration-300">
+        <!-- Viewer Header / Navigation Bar -->
+        <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between gap-4 shadow-xl">
+            <!-- Left: Return to Home Button -->
+            <button onclick="closeAppViewer()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all">
+                <i class="fa-solid fa-house"></i>
+                <span>Torna alla Dashboard</span>
+            </button>
+
+            <!-- Center: Title & Type Indicator -->
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div id="viewerAppIconContainer" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-amber-400 text-sm flex-shrink-0">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div class="truncate">
+                    <h3 id="viewerAppTitle" class="text-sm font-bold text-slate-100 truncate">Documento Title</h3>
+                    <p id="viewerAppType" class="text-[10px] text-slate-400 uppercase tracking-wider truncate">PDF Google Drive / External Viewer</p>
+                </div>
+            </div>
+
+            <!-- Right: External Link & Quick Actions -->
+            <div class="flex items-center space-x-2">
+                <button onclick="reloadIframe()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition" title="Ricarica Documento/App">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+                <a id="viewerExternalBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-2">
+                    <span class="hidden sm:inline">Apri in Scheda / App Drive</span>
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- iframe Wrapper with Loading State -->
+        <div class="relative flex-1 bg-slate-900 overflow-hidden">
+            <!-- Loading Spinner -->
+            <div id="iframeLoader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-10 transition-opacity duration-300">
+                <div class="w-12 h-12 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mb-4"></div>
+                <p class="text-sm font-semibold text-slate-300">Apertura contenuto in corso...</p>
+                <p class="text-xs text-slate-500 mt-1 font-mono" id="iframeUrlNotice"></p>
+            </div>
+
+            <!-- Error / Fallback Notice -->
+            <div id="iframeErrorNotice" class="absolute inset-0 hidden flex-col items-center justify-center bg-slate-950 p-6 text-center z-20">
+                <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-4">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200 mb-2">Apertura nell'Iframe limitata</h3>
+                <p class="text-sm text-slate-400 max-w-md mb-6">
+                    Se il file PDF su Google Drive non è impostato con il link <code>/preview</code> o ha restrizioni di autorizzazione, aprilo direttamente in una nuova scheda.
+                </p>
+                <a id="errorExternalBtn" href="#" target="_blank" class="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    Apri File in Nuova Scheda
+                </a>
+            </div>
+
+            <!-- The Iframe Container -->
+            <iframe id="appIframe" class="w-full h-full border-0" onload="hideIframeLoader()"></iframe>
+        </div>
+    </div>
+
+    <!-- SETTINGS / CONFIGURATION MODAL -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-amber-400"></i>
+                    <h3 class="font-bold text-slate-100">Gestione Moduli, PDF e Link di Set</h3>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="p-6 space-y-6 overflow-y-auto flex-1">
+                
+                <!-- Google Drive Tip Notice -->
+                <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-amber-400">
+                        <i class="fa-brands fa-google-drive"></i> Suggerimento per i file Google Drive (PDF):
+                    </div>
+                    <p>Per far vedere l'anteprima PDF **direttamente nell'hub**, usa il link con <code>/preview</code> finale al posto di <code>/view</code> (Es. <code>https://drive.google.com/file/d/ID_FILE/preview</code>).</p>
+                </div>
+
+                <!-- Section 1: General Info -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 border-b border-slate-800 pb-2">Informazioni Set & Produzione</h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Titolo Produzione</label>
+                            <input type="text" id="settingProdTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Stato / Note Riprese</label>
+                            <input type="text" id="settingShootingMode" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Items Configuration -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400">Elementi Hub (App & PDF)</h4>
+                        <div class="flex gap-2">
+                            <button onclick="addNewItemPrompt('app')" class="text-xs px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> + App
+                            </button>
+                            <button onclick="addNewItemPrompt('pdf')" class="text-xs px-2.5 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 flex items-center gap-1">
+                                <i class="fa-solid fa-file-pdf"></i> + PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="settingsAppsList" class="space-y-4">
+                        <!-- Dynamic list of configuration -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="px-6 py-4 border-t border-slate-800 bg-slate-950/50 flex items-center justify-between">
+                <button onclick="resetDefaultApps()" class="text-xs text-slate-400 hover:text-rose-400 transition">
+                    Ripristina Default
+                </button>
+                <div class="flex items-center space-x-3">
+                    <button onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold">Annulla</button>
+                    <button onclick="saveSettings()" class="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-amber-500/20">Salva Modifiche</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DEFAULT INITIAL ITEMS (OPERATIONAL APPS + PDF DOCUMENTS)
+        const DEFAULT_ITEMS = [
+            // --- OPERATIONAL APPS ---
+            {
+                id: 'radio-app',
+                type: 'app',
+                title: 'Gestione & Distribuzione Radio',
+                category: 'AppSheet Platform',
+                description: 'Controllo inventario, assegnazione frequenze e tracciamento walkie-talkie.',
+                icon: 'fa-walkie-talkie',
+                badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+                badgeText: 'AppSheet',
+                url: 'https://www.appsheet.com/sample/templates'
+            },
+            {
+                id: 'runners-app',
+                type: 'app',
+                title: 'Flusso Runners Set',
+                category: 'HTML / JS Custom App',
+                description: 'Monitoraggio commissioni, spostamenti materiali e consegne veloci.',
+                icon: 'fa-person-running',
+                badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+                badgeText: 'Web App',
+                url: './runners-app.html'
+            },
+            {
+                id: 'callsheet-app',
+                type: 'app',
+                title: 'Controllo Callsheet',
+                category: 'HTML / JS Custom App',
+                description: 'Consultazione orari convocazione, ordine del giorno e contatti reparti.',
+                icon: 'fa-clipboard-list',
+                badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+                badgeText: 'Web App',
+                url: './callsheet-app.html'
+            },
+
+            // --- PDF DOCUMENTS / GOOGLE DRIVE ---
+            {
+                id: 'script-pdf',
+                type: 'pdf',
+                title: 'Sceneggiatura di Set',
+                category: 'Google Drive PDF',
+                description: 'Versione ufficiale di lavorazione con revisioni colorate.',
+                icon: 'fa-scroll',
+                badgeColor: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+                badgeText: 'PDF Drive',
+                url: 'https://drive.google.com/file/d/1BpS_1y-3bO0qS/preview'
+            },
+            {
+                id: 'pdl-pdf',
+                type: 'pdf',
+                title: 'Piano di Lavorazione Generale (PdL)',
+                category: 'Google Drive PDF',
+                description: 'Calendario riprese, blocchi location e pianificazione scene.',
+                icon: 'fa-calendar-week',
+                badgeColor: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+                badgeText: 'PDF Drive',
+                url: 'https://drive.google.com/file/d/1BpS_1y-3bO0qS/preview'
+            },
+            {
+                id: 'comparse-pdf',
+                type: 'pdf',
+                title: 'Schema Figurazioni & Comparse',
+                category: 'Google Drive PDF',
+                description: 'Convocazioni comparse, costume fittings e blocchi scene di massa.',
+                icon: 'fa-users-viewfinder',
+                badgeColor: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+                badgeText: 'PDF Drive',
+                url: 'https://drive.google.com/file/d/1BpS_1y-3bO0qS/preview'
+            }
+        ];
+
+        // GLOBAL STATE
+        let itemsData = [];
+        let activeFilter = 'all';
+        let prodInfo = {
+            title: 'SET PRODUCTION HUB',
+            subtitle: 'Centralina App & Documenti di Set',
+            shootingMode: 'Giorno 14 / Riprese In Corso'
+        };
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSettingsFromStorage();
+            initClock();
+            renderGrids();
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        });
+
+        // LIVE CLOCK FUNCTION
+        function initClock() {
+            const updateClock = () => {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                
+                const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+                const dateStr = now.toLocaleDateString('it-IT', options).toUpperCase();
+
+                document.getElementById('clockTime').textContent = `${hours}:${minutes}:${seconds}`;
+                document.getElementById('clockDate').textContent = dateStr;
+            };
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // LOCAL STORAGE MANAGEMENT
+        function loadSettingsFromStorage() {
+            const savedItems = localStorage.getItem('set_hub_items_v2');
+            const savedProd = localStorage.getItem('set_hub_info_v2');
+
+            if (savedItems) {
+                try {
+                    itemsData = JSON.parse(savedItems);
+                } catch(e) {
+                    itemsData = [...DEFAULT_ITEMS];
+                }
+            } else {
+                itemsData = [...DEFAULT_ITEMS];
+            }
+
+            if (savedProd) {
+                try {
+                    prodInfo = JSON.parse(savedProd);
+                } catch(e) {}
+            }
+
+            // Update Header Display
+            document.getElementById('prodTitleDisplay').textContent = prodInfo.title;
+            document.getElementById('prodSubtitleDisplay').textContent = prodInfo.subtitle;
+            document.getElementById('shootingModeDisplay').textContent = prodInfo.shootingMode;
+        }
+
+        function saveSettingsToStorage() {
+            localStorage.setItem('set_hub_items_v2', JSON.stringify(itemsData));
+            localStorage.setItem('set_hub_info_v2', JSON.stringify(prodInfo));
+        }
+
+        // FILTER MANAGEMENT
+        function setFilter(filterType) {
+            activeFilter = filterType;
+            
+            // Update button styles
+            ['all', 'app', 'pdf'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filterType) {
+                    btn.className = "filter-btn flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-amber-500 text-slate-950 shadow";
+                } else {
+                    btn.className = "filter-btn flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-100 transition-all";
+                }
+            });
+
+            // Toggle sections visibility
+            const secApp = document.getElementById('section-app');
+            const secPdf = document.getElementById('section-pdf');
+
+            if (filterType === 'all') {
+                secApp.style.display = 'block';
+                secPdf.style.display = 'block';
+            } else if (filterType === 'app') {
+                secApp.style.display = 'block';
+                secPdf.style.display = 'none';
+            } else if (filterType === 'pdf') {
+                secApp.style.display = 'none';
+                secPdf.style.display = 'block';
+            }
+        }
+
+        // RENDER CARDS GRID
+        function renderGrids() {
+            const appsGrid = document.getElementById('appsGrid');
+            const pdfGrid = document.getElementById('pdfGrid');
+            
+            appsGrid.innerHTML = '';
+            pdfGrid.innerHTML = '';
+
+            let appCount = 0;
+            let pdfCount = 0;
+
+            itemsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "group relative bg-slate-900 border border-slate-800/90 rounded-2xl p-6 hover:border-amber-500/50 transition-all duration-300 flex flex-col justify-between shadow-lg card-glow hover:-translate-y-1";
+
+                if (item.type === 'app') {
+                    appCount++;
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-start justify-between gap-3 mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/80 group-hover:bg-amber-500/10 group-hover:border-amber-500/30 group-hover:text-amber-400 transition-colors flex items-center justify-center text-slate-300 text-xl shadow-inner">
+                                    <i class="fa-solid ${item.icon}"></i>
+                                </div>
+                                <span class="px-2.5 py-1 text-[11px] font-semibold rounded-full border ${item.badgeColor}">
+                                    ${item.badgeText}
+                                </span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-100 group-hover:text-amber-400 transition-colors mb-2">
+                                ${item.title}
+                            </h3>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                                ${item.description}
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                            <span class="text-slate-500 font-mono text-[10px] truncate max-w-[140px]">
+                                ${item.url}
+                            </span>
+                            <button onclick="openAppViewer(${index})" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
+                                <span>Apri App</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    `;
+                    appsGrid.appendChild(card);
+
+                } else if (item.type === 'pdf') {
+                    pdfCount++;
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-start justify-between gap-3 mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/30 group-hover:bg-rose-500/20 transition-colors flex items-center justify-center text-rose-400 text-xl shadow-inner">
+                                    <i class="fa-solid ${item.icon}"></i>
+                                </div>
+                                <span class="px-2.5 py-1 text-[11px] font-semibold rounded-full border ${item.badgeColor}">
+                                    ${item.badgeText}
+                                </span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-100 group-hover:text-rose-400 transition-colors mb-2">
+                                ${item.title}
+                            </h3>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                                ${item.description}
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                            <a href="${item.url}" target="_blank" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-1 transition" title="Apri su Drive / Download">
+                                <i class="fa-solid fa-download"></i>
+                                <span class="hidden sm:inline">Drive</span>
+                            </a>
+                            <button onclick="openAppViewer(${index})" class="px-3.5 py-1.5 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                                <span>Leggi PDF</span>
+                            </button>
+                        </div>
+                    `;
+                    pdfGrid.appendChild(card);
+                }
+            });
+
+            // Update counter badges
+            document.getElementById('count-all').textContent = itemsData.length;
+            document.getElementById('count-app').textContent = appCount;
+            document.getElementById('count-pdf').textContent = pdfCount;
+        }
+
+        // IFRAME VIEWER HANDLERS
+        function openAppViewer(index) {
+            const item = itemsData[index];
+            if (!item) return;
+
+            const modal = document.getElementById('appViewerModal');
+            const iframe = document.getElementById('appIframe');
+            const loader = document.getElementById('iframeLoader');
+            const errorNotice = document.getElementById('iframeErrorNotice');
+
+            document.getElementById('viewerAppTitle').textContent = item.title;
+            document.getElementById('viewerAppType').textContent = item.badgeText + ' - ' + item.category;
+            document.getElementById('viewerAppIconContainer').innerHTML = `<i class="fa-solid ${item.icon}"></i>`;
+            document.getElementById('viewerExternalBtn').href = item.url;
+            document.getElementById('errorExternalBtn').href = item.url;
+            document.getElementById('iframeUrlNotice').textContent = item.url;
+
+            errorNotice.classList.add('hidden');
+            loader.style.opacity = '1';
+            loader.classList.remove('hidden');
+
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+
+            iframe.src = item.url;
+        }
+
+        function closeAppViewer() {
+            const modal = document.getElementById('appViewerModal');
+            const iframe = document.getElementById('appIframe');
+
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            iframe.src = 'about:blank';
+        }
+
+        function reloadIframe() {
+            const iframe = document.getElementById('appIframe');
+            const loader = document.getElementById('iframeLoader');
+            loader.classList.remove('hidden');
+            loader.style.opacity = '1';
+            iframe.src = iframe.src;
+        }
+
+        function hideIframeLoader() {
+            const loader = document.getElementById('iframeLoader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.classList.add('hidden');
+            }, 300);
+        }
+
+        // SETTINGS MODAL HANDLERS
+        function openSettingsModal() {
+            document.getElementById('settingProdTitle').value = prodInfo.title;
+            document.getElementById('settingShootingMode').value = prodInfo.shootingMode;
+
+            renderSettingsAppsList();
+
+            document.getElementById('settingsModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function renderSettingsAppsList() {
+            const container = document.getElementById('settingsAppsList');
+            container.innerHTML = '';
+
+            itemsData.forEach((item, i) => {
+                const row = document.createElement('div');
+                row.className = "p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3";
+
+                row.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold ${item.type === 'pdf' ? 'text-rose-400' : 'text-amber-400'}">
+                            ${item.type === 'pdf' ? '[PDF Documento]' : '[App Operativa]'} #${i + 1}
+                        </span>
+                        <button onclick="removeItem(${i})" class="text-xs text-rose-500 hover:text-rose-400">
+                            <i class="fa-solid fa-trash mr-1"></i> Rimuovi
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase text-slate-400 mb-1">Titolo Elemento</label>
+                            <input type="text" value="${item.title}" onchange="updateItemProperty(${i}, 'title', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-100">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase text-slate-400 mb-1">Badge / Tipo</label>
+                            <input type="text" value="${item.badgeText}" onchange="updateItemProperty(${i}, 'badgeText', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-100">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-slate-400 mb-1">URL (AppSheet link, HTML custom o Drive /preview PDF)</label>
+                        <input type="text" value="${item.url}" onchange="updateItemProperty(${i}, 'url', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono">
+                    </div>
+                `;
+
+                container.appendChild(row);
+            });
+        }
+
+        function updateItemProperty(index, prop, value) {
+            if (itemsData[index]) {
+                itemsData[index][prop] = value;
+            }
+        }
+
+        function removeItem(index) {
+            itemsData.splice(index, 1);
+            renderSettingsAppsList();
+        }
+
+        function addNewItemPrompt(type) {
+            if (type === 'app') {
+                itemsData.push({
+                    id: 'custom-app-' + Date.now(),
+                    type: 'app',
+                    title: 'Nuova App Operativa',
+                    category: 'Applicazione Integrata',
+                    description: 'Descrizione del nuovo modulo di set.',
+                    icon: 'fa-cubes',
+                    badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+                    badgeText: 'Web App',
+                    url: 'https://example.com'
+                });
+            } else {
+                itemsData.push({
+                    id: 'custom-pdf-' + Date.now(),
+                    type: 'pdf',
+                    title: 'Nuovo Documento PDF',
+                    category: 'Google Drive PDF',
+                    description: 'Consultazione documento di produzione.',
+                    icon: 'fa-file-pdf',
+                    badgeColor: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+                    badgeText: 'PDF Drive',
+                    url: 'https://drive.google.com/file/d/ID_FILE/preview'
+                });
+            }
+            renderSettingsAppsList();
+        }
+
+        function saveSettings() {
+            prodInfo.title = document.getElementById('settingProdTitle').value || 'SET PRODUCTION HUB';
+            prodInfo.shootingMode = document.getElementById('settingShootingMode').value || 'In Ripresa';
+
+            saveSettingsToStorage();
+            loadSettingsFromStorage();
+            renderGrids();
+            closeSettingsModal();
+        }
+
+        function resetDefaultApps() {
+            if (confirm("Vuoi davvero ripristinare la configurazione iniziale?")) {
+                itemsData = [...DEFAULT_ITEMS];
+                prodInfo = {
+                    title: 'SET PRODUCTION HUB',
+                    subtitle: 'Centralina App & Documenti di Set',
+                    shootingMode: 'Giorno 14 / Riprese In Corso'
+                };
+                saveSettingsToStorage();
+                loadSettingsFromStorage();
+                renderGrids();
+                closeSettingsModal();
+            }
+        }
+    </script>
+    <!-- SCRIPT PER PWA E PROMPT INSTALLAZIONE -->
+  <script>
+    // 1. Configurazione del Manifest Dinamico
+    const manifestData = {
+      "name": "Nome Della Tua App",
+      "short_name": "MiaApp",
+      "start_url": "./",
+      "display": "standalone",
+      "background_color": "#020617",
+      "theme_color": "#0f172a",
+      "icons": [
+        {
+          "src": "https://placehold.co/192x192/0f172a/f59e0b?text=APP",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "https://placehold.co/512x512/0f172a/f59e0b?text=APP",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    };
+    const stringManifest = JSON.stringify(manifestData);
+    const manifestUrl = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(stringManifest);
+    document.getElementById('manifest-placeholder').setAttribute('href', manifestUrl);
+
+    // 2. Registrazione Service Worker Inline per supporto PWA/Offline
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE_NAME = 'pwa-cache-v1';
+        self.addEventListener('install', (e) => {
+          e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+        });
+        self.addEventListener('fetch', (e) => {
+          e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+    }
+
+    // 3. Gestione del prompt di installazione
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Mostra il banner quando l'app è pronta per essere installata
+      document.getElementById('pwaInstallBanner').classList.remove('hidden');
+    });
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          document.getElementById('pwaInstallBanner').classList.add('hidden');
+          deferredPrompt = null;
+        });
+      }
+    }
+  </script>
+</body>
+</html>
